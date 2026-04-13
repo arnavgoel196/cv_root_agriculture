@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Root Phenotyping Analyzer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="hero">
+        <p class="eyebrow">Computer Vision for Root Imaging</p>
+        <h1>Upload a root image and get phenotyping results instantly.</h1>
+        <p class="intro">
+          This app uses your notebook workflow: grayscale conversion, Otsu segmentation,
+          morphological cleanup, skeletonization, and convex-hull analysis.
+        </p>
+
+        <form class="upload-panel" method="post" enctype="multipart/form-data">
+          <label for="image" class="upload-label">Select image</label>
+          <input id="image" name="image" type="file" accept=".png,.jpg,.jpeg" required>
+          <button type="submit">Analyze Image</button>
+        </form>
+
+        {% if error %}
+          <div class="message error">{{ error }}</div>
+        {% endif %}
+      </section>
+
+      {% if results %}
+        <section class="results-grid">
+          <article class="card preview-card">
+            <h2>Uploaded Image</h2>
+            <p class="card-subtitle">{{ filename }}</p>
+            <img src="{{ preview_data_url }}" alt="Uploaded root image preview">
+          </article>
+
+          <article class="card preview-card">
+            <h2>Detected Mask</h2>
+            <p class="card-subtitle">Generated from thresholding and cleanup</p>
+            <img src="{{ results.mask_data_url }}" alt="Binary mask preview">
+          </article>
+
+          <article class="card metrics-card">
+            <h2>Phenotyping Metrics</h2>
+            <div class="metrics">
+              <div class="metric">
+                <span>Total Root Length</span>
+                <strong>{{ results.trl_mm }} mm</strong>
+              </div>
+              <div class="metric">
+                <span>Depth</span>
+                <strong>{{ results.depth_mm }} mm</strong>
+              </div>
+              <div class="metric">
+                <span>Tortuosity</span>
+                <strong>{{ results.tortuosity }}</strong>
+              </div>
+              <div class="metric">
+                <span>Hull Area</span>
+                <strong>{{ results.hull_area_mm2 }} mm<sup>2</sup></strong>
+              </div>
+            </div>
+          </article>
+        </section>
+      {% endif %}
+    </main>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+.DS_Store
+photos/
+cropped_photos/
+test_binary_masks/
+rsml_ground_truth/
+RhizoVision_test_binary_masks/
+RhizoVision_rsml_ground_truth/
+RhizoVisionExplorer-2.0.3-windows-x64/
