@@ -4,6 +4,9 @@ __pycache__/
 venv/
 .env
 .DS_Store
+node_modules/
+.next/
+out/
 photos/
 cropped_photos/
 test_binary_masks/

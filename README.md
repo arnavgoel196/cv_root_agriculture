@@ -1,53 +1,44 @@
 # Root Phenotyping Web App
 
-This project turns the notebook workflow into a simple website where you can upload a root image and view the calculated metrics in the browser.
+This project now includes a Next.js version of the root phenotyping website so it is easier to host on platforms like Vercel.
 
 ## What it does
 
 - Uploads a `.png`, `.jpg`, or `.jpeg` image
-- Converts it to grayscale
-- Applies Otsu thresholding and morphological cleanup
-- Computes:
-  - Total root length
-  - Depth
-  - Tortuosity
-  - Convex hull area
-- Displays the uploaded image and generated binary mask
+- Converts it to grayscale and applies blur
+- Uses Otsu thresholding to build a binary mask
+- Cleans the mask with a 3x3 morphological opening
+- Skeletonizes the root structure to estimate total root length
+- Calculates depth, tortuosity, and convex hull area
+- Shows the uploaded image and generated mask in the browser
 
-## Run locally
+## Run the Next.js app locally
 
-1. Create and activate a virtual environment.
-2. Install the dependencies:
+1. Install dependencies:
 
 ```bash
-pip install -r requirements.txt
+npm install
 ```
 
-3. Start the app:
+2. Start the development server:
 
 ```bash
-python app.py
+npm run dev
 ```
 
-4. Open `http://127.0.0.1:5000` in your browser.
+3. Open `http://localhost:3000`.
 
-## Deploy on Render
+## Deploy online
 
-1. Put this project in a GitHub repository.
-2. Create a Render account and choose `New > Web Service`.
-3. Connect the GitHub repository.
-4. Use:
+The easiest hosting option is Vercel:
 
-```txt
-Build Command: pip install -r requirements.txt
-Start Command: gunicorn app:app
-```
-
-5. Deploy the service and Render will give you a public URL.
-
-You can also use the included `render.yaml` for Blueprint deployment.
+1. Push the repo to GitHub.
+2. Import the repo into Vercel.
+3. Deploy with the default Next.js settings.
 
 ## Notes
 
-- The scale factor is currently set to `0.066 mm/pixel`, matching the notebook.
-- If your image capture setup changes, update `SCALE_FACTOR` in `app.py`.
+- The Next.js UI lives in [app/page.tsx](/d:/ugp/app/page.tsx).
+- The analysis API route lives in [app/api/analyze/route.ts](/d:/ugp/app/api/analyze/route.ts).
+- The root analysis logic lives in [lib/root-analysis.ts](/d:/ugp/lib/root-analysis.ts).
+- The original Flask files are still present for reference until you choose to remove them.

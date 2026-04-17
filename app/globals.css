@@ -15,6 +15,10 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -24,6 +28,16 @@ body {
     radial-gradient(circle at top left, rgba(154, 79, 43, 0.18), transparent 28%),
     radial-gradient(circle at bottom right, rgba(85, 115, 67, 0.2), transparent 24%),
     linear-gradient(135deg, var(--bg) 0%, #f9f3ea 45%, var(--bg-accent) 100%);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+img {
+  display: block;
+  width: 100%;
 }
 
 .page-shell {
@@ -101,15 +115,19 @@ button {
   border-radius: 999px;
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   color: #fffaf2;
-  font: inherit;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 180ms ease, box-shadow 180ms ease;
+  transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
   box-shadow: 0 14px 30px rgba(111, 54, 27, 0.25);
 }
 
-button:hover {
+button:hover:not(:disabled) {
   transform: translateY(-1px);
+}
+
+button:disabled {
+  opacity: 0.75;
+  cursor: progress;
 }
 
 .message {
@@ -152,7 +170,7 @@ button:hover {
   color: var(--muted);
 }
 
-img {
+.card img {
   width: 100%;
   max-height: 460px;
   object-fit: contain;
