@@ -1,7 +1,8 @@
 import sharp from "sharp";
 
-const SCALE_FACTOR = 0.066;
+const DEFAULT_SCALE_FACTOR = 0.066;
 const MAX_SIZE = 10 * 1024 * 1024;
+const MAX_ANALYSIS_DIMENSION = 1400;
 
 type Point = {
   x: number;
@@ -74,6 +75,13 @@ function toBinaryImage(width: number, height: number, grayscale: Uint8Array, thr
 
   for (let i = 0; i < grayscale.length; i += 1) {
     data[i] = grayscale[i] > threshold ? 1 : 0;
+  }
+
+  const foregroundCount = data.reduce((count, value) => count + value, 0);
+  if (foregroundCount > data.length / 2) {
+    for (let i = 0; i < data.length; i += 1) {
+      data[i] = data[i] === 1 ? 0 : 1;
+    }
   }
 
   return { width, height, data };
@@ -326,12 +334,38 @@ export function getDataUrlFromBytes(bytes: Buffer, mimeType: string) {
   return `data:${mimeType};base64,${bytes.toString("base64")}`;
 }
 
-export async function analyzeRootImage(imageBytes: Buffer) {
+export function parseScaleFactor(value: FormDataEntryValue | null) {
+  const scaleFactor = Number(value ?? DEFAULT_SCALE_FACTOR);
+
+  if (!Number.isFinite(scaleFactor) || scaleFactor <= 0) {
+    throw new Error("Please enter a valid mm/px scale factor greater than zero.");
+  }
+
+  return scaleFactor;
+}
+
+export async function analyzeRootImage(imageBytes: Buffer, scaleFactor = DEFAULT_SCALE_FACTOR) {
   if (imageBytes.byteLength > MAX_SIZE) {
     throw new Error("Please upload an image smaller than 10 MB.");
   }
 
+  const metadata = await sharp(imageBytes).metadata();
+  const sourceWidth = metadata.width ?? 0;
+  const sourceHeight = metadata.height ?? 0;
+  const largestSourceDimension = Math.max(sourceWidth, sourceHeight);
+  const resizeRatio =
+    largestSourceDimension > MAX_ANALYSIS_DIMENSION
+      ? MAX_ANALYSIS_DIMENSION / largestSourceDimension
+      : 1;
+  const analysisScaleFactor = scaleFactor / resizeRatio;
+
   const { data, info } = await sharp(imageBytes)
+    .resize({
+      width: MAX_ANALYSIS_DIMENSION,
+      height: MAX_ANALYSIS_DIMENSION,
+      fit: "inside",
+      withoutEnlargement: true,
+    })
     .greyscale()
     .blur(1.5)
     .raw()
@@ -349,17 +383,17 @@ export async function analyzeRootImage(imageBytes: Buffer) {
 
   const skeleton = getSkeleton(cleaned);
   const trlPx = countForegroundPixels(skeleton);
-  const trlMm = trlPx * SCALE_FACTOR;
+  const trlMm = trlPx * analysisScaleFactor;
 
   const minY = Math.min(...points.map((point) => point.y));
   const maxY = Math.max(...points.map((point) => point.y));
   const depthPx = maxY - minY;
-  const depthMm = depthPx * SCALE_FACTOR;
+  const depthMm = depthPx * analysisScaleFactor;
   const tortuosity = depthPx > 0 ? trlPx / depthPx : 0;
 
   const hull = convexHull(points);
   const areaPx2 = polygonArea(hull);
-  const areaMm2 = areaPx2 * SCALE_FACTOR * SCALE_FACTOR;
+  const areaMm2 = areaPx2 * analysisScaleFactor * analysisScaleFactor;
 
   const maskBuffer = await sharp(Buffer.from(toMaskData(cleaned)), {
     raw: {
@@ -372,6 +406,8 @@ export async function analyzeRootImage(imageBytes: Buffer) {
     .toBuffer();
 
   return {
+    scaleFactor,
+    resizedForAnalysis: resizeRatio < 1,
     trlMm: Number(trlMm.toFixed(2)),
     depthMm: Number(depthMm.toFixed(2)),
     tortuosity: Number(tortuosity.toFixed(3)),

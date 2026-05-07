@@ -109,6 +109,16 @@ input[type="file"] {
   color: var(--muted);
 }
 
+input[type="number"] {
+  flex: 0 1 180px;
+  min-width: 150px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--text);
+}
+
 button {
   padding: 14px 22px;
   border: 0;

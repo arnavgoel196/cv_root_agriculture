@@ -10,6 +10,8 @@ type AnalysisResponse = {
   depthMm: number;
   tortuosity: number;
   hullAreaMm2: number;
+  scaleFactor: number;
+  resizedForAnalysis: boolean;
 };
 
 export default function Home() {
@@ -18,6 +20,7 @@ export default function Home() {
   const [results, setResults] = useState<AnalysisResponse | null>(null);
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const [scaleFactor, setScaleFactor] = useState("0.066");
 
   useEffect(() => {
     return () => {
@@ -55,6 +58,7 @@ export default function Home() {
 
     const formData = new FormData();
     formData.append("image", selectedFile);
+    formData.append("scaleFactor", scaleFactor);
 
     setIsLoading(true);
     setError("");
@@ -103,6 +107,19 @@ export default function Home() {
             onChange={handleFileChange}
             required
           />
+          <label htmlFor="scaleFactor" className="upload-label">
+            Scale factor
+          </label>
+          <input
+            id="scaleFactor"
+            name="scaleFactor"
+            type="number"
+            min="0.0001"
+            step="0.0001"
+            value={scaleFactor}
+            onChange={(event) => setScaleFactor(event.target.value)}
+            required
+          />
           <button type="submit" disabled={isLoading}>
             {isLoading ? "Analyzing..." : "Analyze Image"}
           </button>
@@ -131,6 +148,10 @@ export default function Home() {
 
               <article className="card metrics-card">
                 <h2>Phenotyping Metrics</h2>
+                <p className="card-subtitle">
+                  Scale factor: {results.scaleFactor} mm/px
+                  {results.resizedForAnalysis ? " · large image optimized for analysis" : ""}
+                </p>
                 <div className="metrics">
                   <div className="metric">
                     <span>Total Root Length</span>

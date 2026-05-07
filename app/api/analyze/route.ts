@@ -1,4 +1,4 @@
-import { analyzeRootImage, getDataUrlFromBytes } from "@/lib/root-analysis";
+import { analyzeRootImage, getDataUrlFromBytes, parseScaleFactor } from "@/lib/root-analysis";
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
@@ -22,7 +22,8 @@ export async function POST(request: Request) {
     }
 
     const bytes = Buffer.from(await file.arrayBuffer());
-    const result = await analyzeRootImage(bytes);
+    const scaleFactor = parseScaleFactor(formData.get("scaleFactor"));
+    const result = await analyzeRootImage(bytes, scaleFactor);
 
     return NextResponse.json({
       filename: file.name,
