@@ -1,44 +1,49 @@
-# Root Phenotyping Web App
+# Root Phenotyping Flask App
 
-This project now includes a Next.js version of the root phenotyping website so it is easier to host on platforms like Vercel.
+Flask web app for analyzing root images and calculating basic phenotyping metrics.
 
-## What it does
+## Features
 
-- Uploads a `.png`, `.jpg`, or `.jpeg` image
-- Converts it to grayscale and applies blur
-- Uses Otsu thresholding to build a binary mask
-- Cleans the mask with a 3x3 morphological opening
-- Skeletonizes the root structure to estimate total root length
-- Calculates depth, tortuosity, and convex hull area
-- Shows the uploaded image and generated mask in the browser
+- Upload PNG, JPG, or JPEG root images
+- Generate a binary root mask with OpenCV
+- Skeletonize the root structure
+- Estimate total root length, depth, tortuosity, and convex hull area
+- Display the uploaded image and generated mask in the browser
 
-## Run the Next.js app locally
+## Run Locally
 
-1. Install dependencies:
+Install the Python dependencies:
 
 ```bash
-npm install
+pip install -r requirements.txt
 ```
 
-2. Start the development server:
+Start the Flask app:
 
 ```bash
-npm run dev
+python work.py
 ```
 
-3. Open `http://localhost:3000`.
+Open:
 
-## Deploy online
+```text
+http://127.0.0.1:5000
+```
 
-The easiest hosting option is Vercel:
+## Deploy On Railway
 
-1. Push the repo to GitHub.
-2. Import the repo into Vercel.
-3. Deploy with the default Next.js settings.
+Railway uses `railway.json` from this repo.
 
-## Notes
+Build command:
 
-- The Next.js UI lives in [app/page.tsx](/d:/ugp/app/page.tsx).
-- The analysis API route lives in [app/api/analyze/route.ts](/d:/ugp/app/api/analyze/route.ts).
-- The root analysis logic lives in [lib/root-analysis.ts](/d:/ugp/lib/root-analysis.ts).
-- The original Flask files are still present for reference until you choose to remove them.
+```bash
+pip install -r requirements.txt
+```
+
+Start command:
+
+```bash
+gunicorn work:app --bind 0.0.0.0:$PORT
+```
+
+The Flask entrypoint is `work.py`, and the Flask app object is named `app`.
