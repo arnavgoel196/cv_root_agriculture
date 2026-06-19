@@ -1,4 +1,4 @@
-# 🌱 Automated Phenotyping of Seedling Root Architecture
+# Automated Phenotyping of Seedling Root Architecture
 ### A Hybrid Mathematical & Deep Learning Pipeline
 
 > Replacing 10–15 minute manual root tracing with a <100ms automated analysis pipeline — deployed as a live web application.
