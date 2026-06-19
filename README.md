@@ -78,10 +78,10 @@ The pipeline selects between two segmentation strategies based on image type:
 git clone https://github.com/arnavgoel196/cv-root-agriculture
 cd cv-root-agriculture
 pip install -r requirements.txt
-python app.py
+python work.py
 ```
 
-Open `http://127.0.0.1:5000` and upload a root image (PNG, JPG, JPEG).
+Or try the **[live demo](https://cv-root-agriculture-production-183c.up.railway.app/)** — no setup required.
 
 ---
 
